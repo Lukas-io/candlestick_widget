@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:candlestick_widget/candlestick_model.dart';
 import 'package:candlestick_widget/candlestick_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,14 +30,21 @@ class _CandleStickScreenState extends State<CandleStickScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Center(
+    if (data != null) {
+      return Scaffold(
+        body: Center(
             child: CustomPaint(
           size: Size(MediaQuery.of(context).size.width, 300),
-          painter: CandleStickPainter(),
+          painter: CandleStickPainter(
+              PriceHistory.fromJson(data!).stockPriceHistory),
         )),
-      ),
-    );
+      );
+    } else {
+      return const SizedBox(
+        height: 200,
+        width: 200,
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 }
