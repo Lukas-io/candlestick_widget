@@ -13,11 +13,8 @@ class CandleStickPainter extends CustomPainter {
     List<double> close = [];
     List<double> high = [];
     List<double> low = [];
-    List<Offset> chartAxis = [];
-
-    Color riseColor = Colors.green;
-    Color fallColor = Colors.red;
-    Color noChangeColor = Colors.grey;
+    double candleWidth = 10;
+    double scale = 1.0;
 
     for (var data in stockPriceHistory) {
       dates.add(data.dateTime);
@@ -27,54 +24,48 @@ class CandleStickPainter extends CustomPainter {
       low.add(data.low);
     }
 
-    DateTime minDate = dates
-        .reduce((value, element) => value.isBefore(element) ? value : element);
-    DateTime maxDate = dates
-        .reduce((value, element) => value.isAfter(element) ? value : element);
+    double openMinValue = open.reduce((a, b) => a < b ? a : b);
+    double openMaxValue = open.reduce((a, b) => a > b ? a : b);
+    double closeMinValue = close.reduce((a, b) => a < b ? a : b);
+    double closeMaxValue = close.reduce((a, b) => a > b ? a : b);
 
-    // Calculate the minimum and maximum y-axis values
-    double minValue = open.reduce((a, b) => a < b ? a : b);
-    double maxValue = open.reduce((a, b) => a > b ? a : b);
-    if (minValue == maxValue) {
-      minValue /= 2;
-      maxValue *= 1.5;
-    }
+    double minValue =
+        openMinValue < closeMinValue ? openMinValue : closeMinValue;
+    double maxValue =
+        openMaxValue > closeMaxValue ? openMaxValue : closeMaxValue;
 
-    // Create a path for the line chart
-    Path chartPath = Path();
-
-    // Move to the first data point
-    double x = ((dates.first.millisecondsSinceEpoch -
-                minDate.millisecondsSinceEpoch) /
-            (maxDate.millisecondsSinceEpoch - minDate.millisecondsSinceEpoch)) *
-        size.width;
-    double y = size.height -
-        ((open.first - minValue) / (maxValue - minValue)) * size.height;
-    chartPath.moveTo(x, y);
-    // Store Chart Axis
-    // for (int i = 0; i < dates.length; i++) {
-    //   double x1 =
-    //       ((dates[i].millisecondsSinceEpoch - minDate.millisecondsSinceEpoch) /
-    //               (maxDate.millisecondsSinceEpoch -
-    //                   minDate.millisecondsSinceEpoch)) *
-    //           size.width;
-    //   double y1 = size.height -
-    //       ((prices[i] - minValue) / (maxValue - minValue)) * size.height;
-    //
-    //   chartAxis.add(Offset(x1, y1));
-    // }
-    //
-    // Color paintColor = prices.first > prices.last ? fallColor : riseColor;
-    //
-    // paintColor = prices.first == prices.last ? noChangeColor : paintColor;
-
-    // Draw lines between each pair of consecutive data points
-    for (int i = 0; i < chartAxis.length - 1; i++) {
+    for (int i = 0; i < dates.length; i++) {
       // Create candlestick
-    }
 
-    chartPath.close();
-    canvas.drawPath(chartPath, Paint()..style = PaintingStyle.fill);
+      final double x = i * candleWidth;
+      final double openY =
+          size.height * (1 - (open[i] - minValue) / (maxValue - minValue));
+      final double closeY =
+          size.height * (1 - (close[i] - minValue) / (maxValue - minValue));
+      final double highY =
+          size.height * (1 - (high[i] - minValue) / (maxValue - minValue));
+      final double lowY =
+          size.height * (1 - (low[i] - minValue) / (maxValue - minValue));
+
+      Paint paint = Paint()
+        ..color = close[i] > open[i] ? Colors.green : Colors.red;
+
+      canvas.drawLine(
+        Offset(x + candleWidth / 2, highY),
+        Offset(x + candleWidth / 2, lowY),
+        paint,
+      );
+
+      canvas.drawRect(
+        Rect.fromLTRB(
+          x + candleWidth * 0.1,
+          openY,
+          x + candleWidth * 0.9,
+          closeY,
+        ),
+        paint,
+      );
+    }
   }
 
   @override

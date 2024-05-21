@@ -40,10 +40,12 @@ class _CandleStickScreenState extends State<CandleStickScreen> {
         )),
       );
     } else {
-      return const SizedBox(
-        height: 200,
-        width: 200,
-        child: CircularProgressIndicator(),
+      return const Center(
+        child: SizedBox(
+          height: 200,
+          width: 200,
+          child: CircularProgressIndicator(),
+        ),
       );
     }
   }
