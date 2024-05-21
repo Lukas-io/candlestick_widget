@@ -28,6 +28,8 @@ class _CandleStickScreenState extends State<CandleStickScreen> {
     super.initState();
   }
 
+  double scale = 1.0;
+
   @override
   Widget build(BuildContext context) {
     if (data != null) {
@@ -36,7 +38,7 @@ class _CandleStickScreenState extends State<CandleStickScreen> {
             child: CustomPaint(
           size: Size(MediaQuery.of(context).size.width, 300),
           painter: CandleStickPainter(
-              PriceHistory.fromJson(data!).stockPriceHistory),
+              PriceHistory.fromJson(data!).stockPriceHistory, scale),
         )),
       );
     } else {

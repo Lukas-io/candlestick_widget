@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class CandleStickPainter extends CustomPainter {
   final List<StockData> stockPriceHistory;
-
-  CandleStickPainter(this.stockPriceHistory);
+  final double? scale;
+  CandleStickPainter(this.stockPriceHistory, this.scale);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -13,8 +13,8 @@ class CandleStickPainter extends CustomPainter {
     List<double> close = [];
     List<double> high = [];
     List<double> low = [];
-    double candleWidth = 10;
-    double scale = 1.0;
+    double scale = this.scale ?? 1.0;
+    double candleWidth = 10 * scale;
 
     for (var data in stockPriceHistory) {
       dates.add(data.dateTime);
